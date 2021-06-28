@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="{{ .Site.LanguageCode }}">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>{{ .Site.Title }}{{ $url := urls.Parse .Page.Permalink }}{{ $url.Path }}</title>
+    {{ with .Site.Params.description }}<meta name="description" content="{{ . }}">{{ end }}
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="all,follow">
+    <meta name="googlebot" content="index,follow,snippet,archive">
+    <link rel="stylesheet" href="http://fonts.cdnfonts.com/css/cascadia-code">
+    <link rel="stylesheet" href="{{ "hugo-theme-console/css/terminal-0.7.1.min.css" | absURL }}">
+    <link rel="stylesheet" href="{{ "hugo-theme-console/css/animate-3.7.2.min.css" | absURL }}">
+    <link rel="stylesheet" href="{{ "hugo-theme-console/css/console.css" | absURL }}">
+    {{ `
+      <!--[if lt IE 9]>
+          <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+          <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+      <![endif]-->
+    ` | safeHTML }}
+
+    {{- partial "favicon.html" . -}}
+    {{ with .OutputFormats.Get "RSS" }}
+      {{ printf `<link href="%s" rel="%s" type="%s" title="%s" />` .Permalink .Rel .MediaType.Type $.Site.Title | safeHTML }}
+    {{ end }}
+    {{- partial "opengraph.html" . -}}
+    {{- partial "twitter_cards.html" . -}}
+    {{ template "_internal/google_analytics.html" . }}
+
+    {{- partial "header.html" . -}}
+<style type="text/css">
+pre code {
+  overflow-x: auto;
+}
+
+.posts-list! > p {
+  left: -130px;
+  position: relative;
+}
+
+a.active {
+  background-color: var(--primary-color);
+  color: var(--invert-font-color)
+}
+
+.strong {
+  display: inline-block;
+  font-weight: bold;
+  margin-top: 1em;
+}
+
+@media only screen and (min-width: 851px) {
+  .container {
+    padding-left: 200px;
+  }
+  
+  .menu.posts-list {
+    left: -110px !important;
+    padding-left: 130px;
+    position: fixed;
+    top: 75px;
+  }
+}
+
+@media only screen and (max-width: 850px) {
+  .menu.posts-list {
+    position: relative !important;
+  }
+
+  .posts-list .date {
+    display: inherit;
+    position: inherit;
+  }
+}
+</style>
+</head>
+<body class="terminal">
+    <div class="container">
+        <div class="terminal-nav">
+          <header class="terminal-logo">
+            <div class="logo terminal-prompt">
+              {{- $url := replace .Permalink ( printf "%s" .Site.BaseURL) "" }}
+              {{ $.Scratch.Add "path" .Site.BaseURL -}}
+              <a href="{{ .Site.BaseURL }}" class="no-style {{ with .Site.Params.TitleCutting }}site-name{{ end }}">{{ .Site.Title }}</a>
+              {{- if isset .Params "breadcrumb" }}
+              {{ $p := .Page }}
+              {{ range .Params.breadcrumb }}{{ with (split . ":") }}
+              {{ $k := index . 0 }}
+              {{ $v := index . 1 }}
+              {{ if eq $k "" }}{{ $v }}{{ else }}<a href='{{ $k }}'>{{ $v }}</a>{{ end }}
+              {{ end }}{{ end }}
+              
+              {{- else -}}
+
+                {{- range $index, $element := split $url "/" }}{{ $.Scratch.Add "path" $element }}
+                  {{- if ne $element "" }} / <a href='{{ $.Scratch.Get "path" | absURL }}'>{{ . }}</a>{{ $.Scratch.Add "path" "/" }}{{ end }}
+                {{- end -}}
+              {{- end }}
+            </div>
+          </header>
+          <nav class="terminal-menu">
+            <ul vocab="https://schema.org/" typeof="BreadcrumbList">
+                {{- range .Site.Params.navlinks -}}
+                <li><a href="{{ .url }}" target="_blank" typeof="ListItem">{{ .name }}<img src="{{ .image }}" alt="" height="24" style="width: auto" title="{{ .title }}"/></a></li>
+                {{- end -}}
+            </ul>
+          </nav>
+        </div>
+    </div>
+
+    <div class="container">
+    <div class="menu posts-list">
+      {{- $currentPage := . }}
+      {{- range $p := slice "/intro" "/intro/similar" "/cmd"
+      "/cmd/output" "/cmd/output/json" "/cmd/output/jsonc" "/cmd/output/table" "/cmd/output/text" "/cmd/output/tsv" "/cmd/output/yaml" "/cmd/output/yamlc"
+      "/lib" "/lib/getting-started" "/lib/custom" "/lib/examples" }}
+      <div class="post">
+        {{- with site.GetPage $p }}
+        {{- $n := (strings.Count "/" $p) }}
+        {{- $n = mul (sub $n 1) 2 }}
+        {{- $indent := strings.Repeat $n "&nbsp;" | safeHTML }}
+        {{- $class := "" }}
+        {{- if eq . $currentPage }}{{ $class = " active" }}{{ end }}
+        {{- if le $n 1 }}{{- $class = print $class " strong" }}{{ end -}}
+        <div>{{ $indent }}<a href="{{ .Permalink }}" class="{{ $class }}" title="{{ .Title }}">{{ .Title }}</a></div>
+        {{- end -}}
+      </div>
+      {{- end -}}
+    </div>
+    </div>
+
+    <div class="container {{ .Site.Params.animateStyle }}" style="margin-left: auto" >
+      {{ if (.Params.toc) }}
+      <aside>
+        <header>
+          <h1>Table of Contents</h1>
+        </header>
+        {{.TableOfContents}}
+      </aside>
+      {{ end }}
+      
+      {{ block "main" . }}
+      {{ end }}
+      {{ partial "footer.html" . }}
+    </div>
+  </body>
+</html>

@@ -1,0 +1,23 @@
+baseURL = "https://abc-inc.github.io/gutenfmt/"
+enableEmoji = true
+languageCode = "en-us"
+theme = "hugo-theme-console"
+title = "gutenfmt"
+
+[markup]
+  [markup.highlight]
+  style = "github"
+  tabWidth = 2
+
+[params]
+  [[params.navlinks]]
+  name = ""
+  image = "https://github.com/fluidicon.png"
+  title = "project on GitHub"
+  url = "https://github.com/abc-inc/gutenfmt/"
+
+  [[params.navlinks]]
+  name = ""
+  image = "https://pkg.go.dev/static/shared/icon/favicon.ico"
+  title = "discover on pkg.go.dev"
+  url = "https://pkg.go.dev/github.com/abc-inc/gutenfmt/"

@@ -1,0 +1,44 @@
+{{ define "main" }}
+
+<p id="banner" style="font-size: 2em; line-height: 2em; min-height: 3em"></p>
+<a href="intro">Learn more</a>
+
+<script src="https://cdn.jsdelivr.net/npm/typeit@7.0.4/dist/typeit.min.js"></script>
+<script type="text/javascript">
+    new TypeIt('#banner', {
+        lifeLike: true,
+        loop: true,
+        loopDelay: 3000,
+        nextStringDelay: 1000,
+        speed: 120,
+        waitUntilVisible: true
+    })
+        .type('Convert JSON to YAML')
+        .pause(1000)
+        .delete(12)
+        .pause(1000)
+        .type('YAML to JSON')
+        .pause(1000)
+        .delete(20, {speed: 80})
+        .type('Format JSON as CSV')
+        .pause(1000)
+        .move(-7)
+        .type('/YAML')
+        .move('END')
+        .pause(1000)
+        .move(-2)
+        .delete(1)
+        .type('T')
+        .move('END')
+        .pause(2000)
+        .delete(3)
+        .type('table')
+        .pause(2000)
+        .delete(8)
+        .type('using a custom template')
+        .pause(4000)
+        .empty()
+        .go();
+</script>
+
+{{ end }}
